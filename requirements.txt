@@ -1,0 +1,11 @@
+numpy
+pandas
+scipy
+networkx
+dimod
+dwave-system
+dwave-inspector
+qiskit
+huggingface-hub
+streamlit
+plotly
