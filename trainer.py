@@ -6,7 +6,6 @@ from datetime import datetime
 import config
 import data_manager
 from qubo_portfolio import build_qubo, solve_qubo_quantum, solve_qubo_classical, select_assets_from_sample, compute_portfolio_return
-from qaoa_benchmark import qaoa_optimize
 
 def convert_to_serializable(obj):
     if isinstance(obj, np.ndarray):
@@ -47,8 +46,6 @@ def main():
                 continue
             print(f"  Processing window {win}d...")
             ret_win = returns.iloc[-win:]
-            mu = ret_win.mean().values
-            cov = ret_win.cov().values
             # Build QUBO
             qubo = build_qubo(ret_win, lambda_risk=config.RISK_AVERSION, cardinality=config.CARDINALITY)
             # Solve (quantum if token available, else classical)
@@ -63,7 +60,6 @@ def main():
             selected_assets = select_assets_from_sample(sample, tickers, config.CARDINALITY)
             # Compute portfolio return (score)
             port_return = compute_portfolio_return(selected_assets, ret_win, equal_weight=True)
-            # For each ETF, we need a per‑ETF score. We'll assign the portfolio return to all selected ETFs, and 0 to others.
             scores = {etf: port_return if etf in selected_assets else 0.0 for etf in tickers}
             window_results[win] = {
                 "selected_assets": selected_assets,
